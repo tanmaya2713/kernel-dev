@@ -1,41 +1,54 @@
-Motorola One Fusion+ (liber) Custom Kernel with KernelSU-Next
-This repository contains the complete source code, configuration, and AnyKernel3 packaging setup to build and flash a custom, KernelSU-Next enabled kernel for the Motorola One Fusion+ (codename: liber) running Android 14.
+# Motorola One Fusion+ (`liber`) Custom Kernel with KernelSU-Next
 
-Device Specifications
-Device: Motorola One Fusion+ (liber)
+This repository contains the complete source code, configuration, and AnyKernel3 packaging setup to build and flash a custom, KernelSU-Next enabled kernel for the **Motorola One Fusion+ (codename: `liber`)** running **Android 14**.
 
-Platform: Qualcomm Snapdragon 730 / SM6150
+## 📱 Device Specifications
 
-Kernel Version: Linux 4.14 (Non-GKI legacy architecture)
+* **Device:** Motorola One Fusion+ (`liber`)
 
-Boot Image Architecture: Header v2 (Requires uncompressed raw Image)
+* **Platform:** Qualcomm Snapdragon 730 / SM6150
 
-Root Solution: KernelSU-Next (integrated via Kprobes)
+* **Kernel Version:** Linux 4.14 (Non-GKI legacy architecture)
 
-Repository Structure
-Plaintext
+* **Boot Image Architecture:** Header v2 (Requires uncompressed raw `Image`)
+
+* **Root Solution:** KernelSU-Next (integrated via Kprobes)
+
+## 🛠️ Repository Structure
+
+```
 /kernel-dev
 ├── kernel/                  # Kernel source tree with integrated KernelSU-Next & SELinux patches
 ├── anykernel3/              # AnyKernel3 packaging scripts and tools for flashable ZIP creation
 └── .gitignore               # Excludes build artifacts (out/, Image, zips) to keep repo clean
-Step-by-Step Setup & Build Guide
-Prerequisites
+
+```
+
+## 🚀 Step-by-Step Setup & Build Guide
+
+### Prerequisites
+
 Make sure your build environment (such as a GitHub Codespace or a Linux workstation) has the required build tools installed:
 
-make, gcc, bc, flex, bison, libssl-dev, git, zip
+* `make`, `gcc`, `bc`, `flex`, `bison`, `libssl-dev`, `git`, `zip`
 
-Appropriate ARM64 toolchains (AArch64 GCC/Clang)
+* Appropriate ARM64 toolchains (AArch64 GCC/Clang)
 
-Step 1: Clone the Repository
+### Step 1: Clone the Repository
+
 Clone this repository with all its contents:
 
-Bash
+```
 git clone https://github.com/tanmaya2713/kernel-dev.git
 cd kernel-dev
-Step 2: Configure the Kernel
+
+```
+
+### Step 2: Configure the Kernel
+
 Navigate into the kernel source tree and load your device defconfig:
 
-Bash
+```
 cd kernel
 
 # Set environment variables for ARM64 compilation
@@ -44,55 +57,74 @@ export SUBARCH=arm64
 
 # Load the defconfig for liber
 make liber_defconfig
-Step 3: Build the Kernel
-Compile the kernel using your toolchain. For header v2 devices like the Motorola One Fusion+, the build system generates an uncompressed Image file:
 
-Bash
+```
+
+### Step 3: Build the Kernel
+
+Compile the kernel using your toolchain. For header v2 devices like the Motorola One Fusion+, the build system generates an uncompressed `Image` file:
+
+```
 make -j$(nproc) O=out
+
+```
+
 Once the compilation finishes successfully, your outputs will be located at:
 
-out/arch/arm64/boot/Image (Primary uncompressed kernel binary required for liber)
+* `out/arch/arm64/boot/Image` (Primary uncompressed kernel binary required for `liber`)
 
-Packaging with AnyKernel3
+## 📦 Packaging with AnyKernel3
+
 AnyKernel3 allows you to flash your custom kernel safely via custom recoveries like TWRP or OrangeFox without messing up your ramdisk structure.
 
-Step 1: Copy the Kernel Image
-Copy your compiled uncompressed Image into the AnyKernel3 directory:
+### Step 1: Copy the Kernel Image
 
-Bash
+Copy your compiled uncompressed `Image` into the AnyKernel3 directory:
+
+```
 cd /workspaces/kernel-dev
 cp kernel/out/arch/arm64/boot/Image anykernel3/
-Step 2: Generate the Flashable ZIP
-Navigate to the anykernel3 folder, clean up metadata, and compress the package:
 
-Bash
+```
+
+### Step 2: Generate the Flashable ZIP
+
+Navigate to the `anykernel3` folder, clean up metadata, and compress the package:
+
+```
 cd anykernel3
 rm -rf .git
 zip -r9 ../Motorola-One-Fusion-Plus-KernelSU-Next-Uncompressed.zip *
+
+```
+
 Your flashable zip is now generated at:
-../Motorola-One-Fusion-Plus-KernelSU-Next-Uncompressed.zip
+`../Motorola-One-Fusion-Plus-KernelSU-Next-Uncompressed.zip`
 
-Flashing Instructions
-Transfer the ZIP: Copy Motorola-One-Fusion-Plus-KernelSU-Next-Uncompressed.zip from your PC/Codespace to your phone's internal storage or an SD card.
+## ⚡ Flashing Instructions
 
-Boot into Recovery: Power off your device and boot into your custom recovery (TWRP or OrangeFox).
+1. **Transfer the ZIP:** Copy `Motorola-One-Fusion-Plus-KernelSU-Next-Uncompressed.zip` from your PC/Codespace to your phone's internal storage or an SD card.
 
-Flash the ZIP:
+2. **Boot into Recovery:** Power off your device and boot into your custom recovery (**TWRP** or **OrangeFox**).
 
-Tap on Install.
+3. **Flash the ZIP:**
 
-Select Motorola-One-Fusion-Plus-KernelSU-Next-Uncompressed.zip.
+   * Tap on **Install**.
 
-Swipe to confirm the flash. (AnyKernel3 will automatically parse your v2 boot header and patch the boot partition).
+   * Select `Motorola-One-Fusion-Plus-KernelSU-Next-Uncompressed.zip`.
 
-Reboot: Clear cache/dalvik (optional) and reboot to system.
+   * Swipe to confirm the flash. (AnyKernel3 will automatically parse your v2 boot header and patch the boot partition).
 
-Verification
-Once booted into Android 14, install the official KernelSU-Next Manager APK.
+4. **Reboot:** Clear cache/dalvik (optional) and reboot to system.
 
-Open the app to verify that KernelSU-Next is active and operational.
+## 🔍 Verification
 
-Key Developer Notes & Fixes Applied
-SELinux Pointer Cast Fix: Fixed type mismatches in drivers/kernelsu/selinux/sepolicy.c by correctly casting flex_array pointers to avtab_node to ensure successful compilation on Linux 4.14.
+1. Once booted into Android 14, install the official **KernelSU-Next Manager** APK.
 
-Uncompressed Boot Image: Motorola One Fusion+ expects a raw uncompressed Image rather than a compressed Image.gz, handled natively by the custom AnyKernel3 configuration.
+2. Open the app to verify that KernelSU-Next is active and operational.
+
+## 📝 Key Developer Notes & Fixes Applied
+
+* **SELinux Pointer Cast Fix:** Fixed type mismatches in `drivers/kernelsu/selinux/sepolicy.c` by correctly casting `flex_array` pointers to `avtab_node` to ensure successful compilation on Linux 4.14.
+
+* **Uncompressed Boot Image:** Motorola One Fusion+ expects a raw uncompressed `Image` rather than a compressed `Image.gz`, handled natively by the custom AnyKernel3 configuration.
