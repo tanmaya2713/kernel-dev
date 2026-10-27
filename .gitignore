@@ -1,0 +1,10 @@
+/kernel/out/
+*.zip
+*.img
+Image
+Image.gz
+Image.gz-dtb
+anykernel3/Image
+anykernel3/Image.gz
+anykernel3/Image.gz-dtb
+anykernel3/*.zip
